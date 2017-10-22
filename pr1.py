@@ -7,7 +7,7 @@ import re
 import urllib.request
 
 
-def process_web_page(url, count, already_visited_pages):
+def process_web_page(url, count, already_visited_pages, total_word_list):
     if count < 50:  # limits web page visiting to 50, as specified in requirements
         page = urllib.request.urlopen(url)
         page_text = str(page.read())
@@ -15,15 +15,20 @@ def process_web_page(url, count, already_visited_pages):
         links = list(set(links))  # make links unique, just in case they are reference multiple times.
         write_connections_to_csv(url, links)
 
+        total_word_list += re.findall('<[hp][1-9]?>(.*?)</[hp][1-9]?>', page_text)  # get text
+        #print(total_word_list)
+
         for sub_url in links:  # for each url, visit the children urls
             if sub_url not in already_visited_pages:
                 count += 1
                 already_visited_pages.append(sub_url)  # remember which pages have already been visited (prevent loops)
-                process_web_page(sub_url, count, already_visited_pages)  # recursively crawl through child pages
+                process_web_page(sub_url, count, already_visited_pages, total_word_list)  # recursively crawl through child pages
                 # print(sub_url, count)
         # print(alreadyVisitedPages)
     else:
         print('Exceeded 50 sites.')
+
+    return total_word_list
 
 
 # Writes url and link connections to csv file.
@@ -49,7 +54,8 @@ def main():
     for url in url_list_file:  # get list of urls in file
         url = url.rstrip() # remove newline
         url_list.append(url)
-        process_web_page(url, 0, [url])
+        word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
+        print(word_list)
 
     url_list_file.close()
 
