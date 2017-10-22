@@ -7,21 +7,21 @@ import re
 import urllib.request
 
 
-def process_web_page(url, count, alreadyVisitedPages):
-    if count < 50:
+def process_web_page(url, count, already_visited_pages):
+    if count < 50:  # limits web page visiting to 50, as specified in requirements
         page = urllib.request.urlopen(url)
         page_text = str(page.read())
-        links = re.findall(r'a href[\s+]?=[\s+]?["]?([^"\s >]+)', page_text) #get all absolute urls
-        links = list(set(links)) # make links unique, just in case they are reference multiple times.
+        links = re.findall(r'a href[\s+]?=[\s+]?["]?([^"\s >]+)', page_text)  # gets absolute urls in current page
+        links = list(set(links))  # make links unique, just in case they are reference multiple times.
         write_connections_to_csv(url, links)
 
         for sub_url in links:  # for each url, visit the children urls
-            if sub_url not in alreadyVisitedPages:
+            if sub_url not in already_visited_pages:
                 count += 1
-                alreadyVisitedPages.append(sub_url)
-                process_web_page(sub_url, count, alreadyVisitedPages)
-                #print(sub_url, count)
-        #print(alreadyVisitedPages)
+                already_visited_pages.append(sub_url)  # remember which pages have already been visited (prevent loops)
+                process_web_page(sub_url, count, already_visited_pages)  # recursively crawl through child pages
+                # print(sub_url, count)
+        # print(alreadyVisitedPages)
     else:
         print('Exceeded 50 sites.')
 
@@ -40,6 +40,7 @@ def write_connections_to_csv(url, links):
     f.close()
 
 
+# clears csv file, and starts the crawling process on each of the provided links.
 def main():
     open('results.csv', 'w').close()  # clear contents of csv from previous executions of the program
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
@@ -54,5 +55,4 @@ def main():
 
 
 if __name__ == "__main__":
-    #  sys.setrecursionlimit(50)  # Since we only want to visit 50 pages, we set the recursion limit here.
     main()
