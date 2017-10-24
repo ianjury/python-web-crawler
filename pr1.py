@@ -73,20 +73,22 @@ def create_word_cloud(word_dict):
     for count in range(12):
         if word_dict:  # Checks that there are still words in the dictionary
             current_largest = max(word_dict, key=word_dict.get)
-            del word_dict[current_largest]
-            #print(current_largest)
+
             T = Text(gui, height=1, width=30)
             T.pack()
             T.config(font=("Courier", font_size))
-            starting_point = random.randrange(0,15)
-            while starting_point in previous_starting_points:
+
+            starting_point = random.randrange(0,15)  # randomly assign starting point for word placement
+            while starting_point in previous_starting_points:  # but don't allow overlapping words
                 starting_point = random.randrange(1, 15)
             T.grid(row = starting_point)
-            previous_starting_points.append(starting_point)
             T.insert(END, current_largest)
+
+            previous_starting_points.append(starting_point)  # Housekeeping
+            del word_dict[current_largest]
             font_size -= 3
-        else:
-            print('less than 12 unique words in pages. View GUI to see how many are present.')
+        else:  # If there are less than 12 unique words, then we're just going to get out.
+            print("Less than 12 unique words found in pages. View GUI to see how many are present.")
             break
 
     gui.mainloop()
