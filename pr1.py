@@ -44,6 +44,13 @@ def write_connections_to_csv(url, links):
 
     f.close()
 
+def analyze_words(word_list):
+    word_dict = {}
+    for sentence in word_list:
+        for word in sentence.split():
+            word = word.rstrip(r'],.')
+            print(word)
+
 
 # clears csv file, and starts the crawling process on each of the provided links.
 def main():
@@ -55,6 +62,7 @@ def main():
         url = url.rstrip() # remove newline
         url_list.append(url)
         word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
+        analyze_words(word_list)
         print(word_list)
 
     url_list_file.close()
