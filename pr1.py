@@ -63,8 +63,12 @@ def analyze_words(word_list):
 
 # creates and displays word cloud using word frequency dictionary -- current word cloud count == 12
 def create_word_cloud(word_dict):
+    for count in range(12):
+        current_largest = max(word_dict, key=word_dict.get)
+        del word_dict[current_largest]
+        print(current_largest)
 
-    print(word_dict)
+    #print(word_dict)
 
 # clears csv file, and starts the crawling process on each of the provided links.
 def main():
