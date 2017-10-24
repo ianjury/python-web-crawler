@@ -48,8 +48,14 @@ def analyze_words(word_list):
     word_dict = {}
     for sentence in word_list:
         for word in sentence.split():
-            word = word.rstrip(r'],.')
-            print(word)
+            word = word.rstrip(r"]],.}")  # Strip non alpha chars
+            word = word.lstrip(".'[{")
+            if word in word_dict:  # If already in dictionary, increment associated value counter
+                word_dict[word] += 1
+            else:
+                word_dict[word] = 1  # Else, initialize counter
+
+    print(word_dict)
 
 
 # clears csv file, and starts the crawling process on each of the provided links.
