@@ -6,6 +6,7 @@ Assignment 1
 import re
 import urllib.request
 from tkinter import *
+import random
 
 
 def process_web_page(url, count, already_visited_pages, total_word_list):
@@ -67,7 +68,8 @@ def create_word_cloud(word_dict):
     gui = Tk()
     dim = 500
     gui.geometry('500x500+300+200')
-    font_size = 40
+    font_size = 45
+    previous_starting_points = []  # The previous starting point for words so they're not drawn over each other
     for count in range(12):
         if word_dict:  # Checks that there are still words in the dictionary
             current_largest = max(word_dict, key=word_dict.get)
@@ -76,6 +78,11 @@ def create_word_cloud(word_dict):
             T = Text(gui, height=1, width=30)
             T.pack()
             T.config(font=("Courier", font_size))
+            starting_point = random.randrange(0,15)
+            while starting_point in previous_starting_points:
+                starting_point = random.randrange(1, 15)
+            T.grid(row = starting_point)
+            previous_starting_points.append(starting_point)
             T.insert(END, current_largest)
             font_size -= 3
         else:
@@ -89,7 +96,7 @@ def create_word_cloud(word_dict):
 def main():
     open('results.csv', 'w').close()  # clear contents of csv from previous executions of the program
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
-    url_list_file = open(test_files[1], 'r')  # change index here to go between test files.
+    url_list_file = open(test_files[0], 'r')  # change index here to go between test files.
     url_list = []
     for url in url_list_file:  # get list of urls in file
         url = url.rstrip()  # remove newline
