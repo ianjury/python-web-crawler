@@ -44,19 +44,27 @@ def write_connections_to_csv(url, links):
 
     f.close()
 
+
+# Takes list of words and converts and returns a dictionary where the key = word, value = count
 def analyze_words(word_list):
     word_dict = {}
     for sentence in word_list:
         for word in sentence.split():
             word = word.rstrip(r"]],.}")  # Strip non alpha chars
             word = word.lstrip(".'[{")
+            word = word.lower()
             if word in word_dict:  # If already in dictionary, increment associated value counter
                 word_dict[word] += 1
             else:
                 word_dict[word] = 1  # Else, initialize counter
 
-    print(word_dict)
+    return word_dict
 
+
+# creates and displays word cloud using word frequency dictionary -- current word cloud count == 12
+def create_word_cloud(word_dict):
+
+    print(word_dict)
 
 # clears csv file, and starts the crawling process on each of the provided links.
 def main():
@@ -68,8 +76,8 @@ def main():
         url = url.rstrip() # remove newline
         url_list.append(url)
         word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
-        analyze_words(word_list)
-        print(word_list)
+        word_dict = analyze_words(word_list)  # gets all words/count as dictionary
+        create_word_cloud(word_dict)  # creates and displays word cloud using word frequency dictionary
 
     url_list_file.close()
 
