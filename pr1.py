@@ -5,6 +5,7 @@ Assignment 1
 """
 import re
 import urllib.request
+from tkinter import *
 
 
 def process_web_page(url, count, already_visited_pages, total_word_list):
@@ -63,21 +64,35 @@ def analyze_words(word_list):
 
 # creates and displays word cloud using word frequency dictionary -- current word cloud count == 12
 def create_word_cloud(word_dict):
+    gui = Tk()
+    dim = 500
+    gui.geometry('500x500+300+200')
+    font_size = 40
     for count in range(12):
-        current_largest = max(word_dict, key=word_dict.get)
-        del word_dict[current_largest]
-        print(current_largest)
+        if word_dict:  # Checks that there are still words in the dictionary
+            current_largest = max(word_dict, key=word_dict.get)
+            del word_dict[current_largest]
+            #print(current_largest)
+            T = Text(gui, height=1, width=30)
+            T.pack()
+            T.config(font=("Courier", font_size))
+            T.insert(END, current_largest)
+            font_size -= 3
+        else:
+            print('less than 12 unique words in pages. View GUI to see how many are present.')
+            break
 
-    #print(word_dict)
+    gui.mainloop()
+
 
 # clears csv file, and starts the crawling process on each of the provided links.
 def main():
     open('results.csv', 'w').close()  # clear contents of csv from previous executions of the program
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
-    url_list_file = open(test_files[0], 'r')  # change index here to go between test files.
+    url_list_file = open(test_files[1], 'r')  # change index here to go between test files.
     url_list = []
     for url in url_list_file:  # get list of urls in file
-        url = url.rstrip() # remove newline
+        url = url.rstrip()  # remove newline
         url_list.append(url)
         word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
         word_dict = analyze_words(word_list)  # gets all words/count as dictionary
