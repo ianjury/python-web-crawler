@@ -8,14 +8,14 @@ import urllib.request
 from tkinter import *
 import random
 
-
+# Shouldn't use global variables - but was running into problems with recursive calls in method below.
 c = 0
 
 def process_web_page(url, count, already_visited_pages, total_word_list):
     global c
     if c < 50:  # limits web page visiting to 50, as specified in requirements
-        print(url)
-        try:
+        #print(url)
+        try:  # prevents hitting dead 404 webpage
             c += 1
             page = urllib.request.urlopen(url)
             page_text = str(page.read())
@@ -106,7 +106,7 @@ def create_word_cloud(word_dict):
 def main():
     open('results.csv', 'w').close()  # clear contents of csv from previous executions of the program
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
-    url_list_file = open(test_files[2], 'r')  # change index here to go between test files.
+    url_list_file = open(test_files[1], 'r')  # change index here to go between test files.
     url_list = []
     for url in url_list_file:  # get list of urls in file
         url = url.rstrip()  # remove newline
