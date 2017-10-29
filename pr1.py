@@ -7,13 +7,14 @@ import re
 import urllib.request
 from tkinter import *
 import random
+from multiprocessing import Pool
 
 
 # Shouldn't use global variables - but was running into problems with recursive calls in method below.
 c = 0
 
 
-def process_web_page(url, count, already_visited_pages, total_word_list):
+def process_web_page(url, already_visited_pages, total_word_list):
     global c
     print('analyzing web page...')
     if c < 50:  # limits web page visiting to 50, as specified in requirements
@@ -31,9 +32,8 @@ def process_web_page(url, count, already_visited_pages, total_word_list):
 
             for sub_url in links:  # for each url, visit the children urls
                 if sub_url not in already_visited_pages:
-                    count += 1
                     already_visited_pages.append(sub_url)  # remember which pages have already been visited (prevent loops)
-                    process_web_page(sub_url, count, already_visited_pages, total_word_list)  # recursively crawl through child pages
+                    process_web_page(sub_url, already_visited_pages, total_word_list)  # recursively crawl through child pages
         except:
             pass
         # print(alreadyVisitedPages)
@@ -99,9 +99,9 @@ def create_word_cloud(word_dict):
             del word_dict[current_largest]
             font_size -= 3
         else:  # If there are less than 12 unique words, then we're just going to get out.
-            print("Less than 12 unique words found in pages. View GUI to see how many are present.")
+            print("Less than 12 unique words found in pages")
             break
-
+    print('View GUI for results.')
     gui.mainloop()
 
 
@@ -111,14 +111,23 @@ def main():
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
     url_list_file = open(test_files[1], 'r')  # change index here to go between test files.
     url_list = []
+    word_lists = []
     for url in url_list_file:  # get list of urls in file
         url = url.rstrip()  # remove newline
         url_list.append(url)
         global c
         c = 0
-        word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
-        word_dict = analyze_words(word_list)  # gets all words/count as dictionary
-        create_word_cloud(word_dict)  # creates and displays word cloud using word frequency dictionary
+        word_lists.append(process_web_page(url, [url], []))  # gets all of the 'text' words from the html files
+    '''Processes the list of words found using multithreading, so each word could is ready to be displayed,
+       and stores all of the results in a list of dictionaries.
+       TKinter wouldn't allow multiple instances of a GUI in multiprocessing (although there is probably a
+       workaround), so only one will be displayed at a time, but the processing for each is finished at the same time.   
+    '''
+    pool = Pool()
+    word_dicts = pool.map(analyze_words, word_lists) # Processes all of the word lists
+
+    for r in word_dicts:
+        create_word_cloud(r)
 
     url_list_file.close()
 
