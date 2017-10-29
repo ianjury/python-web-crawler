@@ -9,10 +9,14 @@ from tkinter import *
 import random
 
 
+c = 0
+
 def process_web_page(url, count, already_visited_pages, total_word_list):
-    if count < 50:  # limits web page visiting to 50, as specified in requirements
+    global c
+    if c < 50:  # limits web page visiting to 50, as specified in requirements
         print(url)
         try:
+            c += 1
             page = urllib.request.urlopen(url)
             page_text = str(page.read())
             links = re.findall(r'a href[\s+]?=[\s+]?["]?(http[^"\s >]+)', page_text)  # gets absolute urls in current page
@@ -107,6 +111,8 @@ def main():
     for url in url_list_file:  # get list of urls in file
         url = url.rstrip()  # remove newline
         url_list.append(url)
+        global c
+        c = 0
         word_list = process_web_page(url, 0, [url], [])  # gets all of the 'text' words from the html files
         word_dict = analyze_words(word_list)  # gets all words/count as dictionary
         create_word_cloud(word_dict)  # creates and displays word cloud using word frequency dictionary
