@@ -8,11 +8,14 @@ import urllib.request
 from tkinter import *
 import random
 
+
 # Shouldn't use global variables - but was running into problems with recursive calls in method below.
 c = 0
 
+
 def process_web_page(url, count, already_visited_pages, total_word_list):
     global c
+    print('analyzing web page...')
     if c < 50:  # limits web page visiting to 50, as specified in requirements
         #print(url)
         try:  # prevents hitting dead 404 webpage
@@ -35,7 +38,7 @@ def process_web_page(url, count, already_visited_pages, total_word_list):
             pass
         # print(alreadyVisitedPages)
     else:
-        print('Exceeded 50 sites.')
+        # print('Exceeded 50 sites.')
         return None
 
     return total_word_list
