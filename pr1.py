@@ -13,7 +13,7 @@ from multiprocessing import Pool
 # Shouldn't use global variables - but was running into problems with recursive calls in method below.
 c = 0
 
-
+#
 def process_web_page(url, already_visited_pages, total_word_list):
     global c
     print('analyzing web page...')
@@ -27,7 +27,7 @@ def process_web_page(url, already_visited_pages, total_word_list):
             links = list(set(links))  # make links unique, just in case they are reference multiple times.
             write_connections_to_csv(url, links)
 
-            total_word_list += re.findall('<[hp][1-9]?>(.*?)</[hp][1-9]?>', page_text)  # get text
+            total_word_list += re.findall('<[hp][1-9]?>[^<](.*?)</[hp][1-9]?>', page_text)  # get text
             #print(total_word_list)
 
             for sub_url in links:  # for each url, visit the children urls
@@ -107,9 +107,12 @@ def create_word_cloud(word_dict):
 
 # clears csv file, and starts the crawling process on each of the provided links.
 def main():
+
     open('results.csv', 'w').close()  # clear contents of csv from previous executions of the program
     test_files = ['urls2.txt', 'urls3.txt', 'urls6.txt']  # holds names of test files provided
-    url_list_file = open(test_files[1], 'r')  # change index here to go between test files.
+
+    url_list_file = open(test_files[2], 'r')  # change index here to go between test files.
+
     url_list = []
     word_lists = []
     for url in url_list_file:  # get list of urls in file
